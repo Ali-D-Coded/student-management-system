@@ -18,6 +18,7 @@ func GetCollection(name string) *mongo.Collection {
 
 func StartMongoDB() error {
 	uri := os.Getenv("MONGODB_URI")
+
 	if uri == "" {
 		return errors.New("you must set your 'MONGODB_URI' environmental variable. See\n\t https://www.mongodb.com/docs/drivers/go/current/usage-examples/#environment-variable")
 	}
