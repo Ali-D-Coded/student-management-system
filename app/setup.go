@@ -1,9 +1,11 @@
 package app
 
 import (
+	"log"
 	"os"
 	"student-management-system/database"
 	"student-management-system/router"
+	"student-management-system/utils"
 
 	"student-management-system/config"
 
@@ -12,7 +14,21 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
+type Indexable struct {
+	collection string
+	fields     []string
+}
+
+
 func SetupAndRunApp() error {
+
+
+	Indexables := []Indexable{
+	   {
+		   collection: "users",
+		   fields:     []string{"username", "email", "refreshToken"},
+	   },
+	}
 	// load env
 	err := config.LoadENV()
 	if err != nil {
@@ -24,6 +40,16 @@ func SetupAndRunApp() error {
 	if err != nil {
 		return err
 	}
+
+	for _, indexable := range Indexables {
+		// Create unique indexes for the users collection
+		err = utils.CreateUniqueIndexes(indexable.collection, indexable.fields...)
+		if err != nil {
+			log.Fatal("Failed to create unique indexes for users:", err)
+		}
+	}
+
+
 
 	// defer closing database
 	defer database.CloseMongoDB()
@@ -37,6 +63,9 @@ func SetupAndRunApp() error {
 		Format: "[${ip}]:${port} ${status} - ${method} ${path} ${latency}\n",
 	}))
 
+	
+
+	
 	// setup routes
 	router.SetupRoutes(app)
 

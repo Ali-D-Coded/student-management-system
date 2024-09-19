@@ -40,6 +40,7 @@ func StartMongoDB() error {
 	if err != nil {
 		return errors.New("can't verify a connection")
 	}
+
 	
 	return nil
 }
